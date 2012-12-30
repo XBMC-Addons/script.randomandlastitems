@@ -587,12 +587,14 @@ def _parse_argv ( ):
                 METHOD = param.replace('method=', '')
             elif 'playlist=' in param:
                 PLAYLIST = param.replace('playlist=', '')
-            elif 'PROPERTY=' in param:
-                PROPERTY = param.replace('PROPERTY=', '')
+            elif 'property=' in param:
+                PROPERTY = param.replace('property=', '')
             elif 'type=' in param:
                 TYPE = param.replace('type=', '')
             elif 'unwatched=' in param:
                 UNWATCHED = param.replace('unwatched=', '')
+                if UNWATCHED == '':
+                    UNWATCHED = 'False'
             elif 'resume=' in param:
                 RESUME = param.replace('resume=', '')
         # If playlist= parameter is set and not type= get type= from playlist
