@@ -531,6 +531,7 @@ def _setAlbumPROPERTIES ( _album, _count ):
         if rating == '48':
             rating = ''
         play = 'XBMC.RunScript(' + __addonid__ + ',albumid=' + str(_album.get('id')) + ')'
+        path = 'musicdb://3/' + str(_album.get('id')) + '/'
         _setProperty("%s.%d.Title"       % ( PROPERTY, _count ), _album['title'])
         _setProperty("%s.%d.Label"       % ( PROPERTY, _count ), _album['title']) #needs to be removed
         _setProperty("%s.%d.Artist"      % ( PROPERTY, _count ), " / ".join(_album['artist']))
@@ -544,6 +545,7 @@ def _setAlbumPROPERTIES ( _album, _count ):
         _setProperty("%s.%d.Art(thumb)"  % ( PROPERTY, _count ), _album['thumbnail'])
         _setProperty("%s.%d.Art(fanart)" % ( PROPERTY, _count ), _album['fanart'])
         _setProperty("%s.%d.Play"        % ( PROPERTY, _count ), play)
+        _setProperty("%s.%d.LibraryPath" % ( PROPERTY, _count ), path)
     else:
         _setProperty("%s.%d.Title"       % ( PROPERTY, _count ), '')
     
