@@ -1,6 +1,7 @@
 import xbmc, xbmcgui, xbmcaddon
 import re, sys, os, time
 import random
+import urllib
 from operator import itemgetter
 try:
     import json as simplejson
