@@ -238,6 +238,8 @@ def _getEpisodesFromPlaylist ( ):
                         # Add TV Show fanart and thumbnail for each episode
                         #_episode["tvshowid"]=_file['id']
                         art = _episode['art']
+                        # Add episode ID when playlist type is TVShow
+                        _episode["id"]=_episode['episodeid']
                         _episode["tvshowfanart"]=art.get('tvshow.fanart')
                         _episode["tvshowthumb"]=art.get('thumb')
                         _total, _watched, _unwatched, _result = _watchedOrResume ( _total, _watched, _unwatched, _result, _episode )
