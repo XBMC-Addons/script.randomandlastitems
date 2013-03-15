@@ -358,11 +358,9 @@ def _getAlbumsFromPlaylist ( ):
                 break
             if _file['type'] == 'album':
                 _albums.append(_file)
-            '''
-            if _file['type'] == 'album':
                 _albumid = _file['id']
                 # Album playlist so get path from songs
-                _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetSongs", "params": {"albumid": 1, "Properties": ["albumartistid"]}, "id": 1}' )
+                _json_query = xbmc.executeJSONRPC('{"id":1, "jsonrpc":"2.0", "method":"AudioLibrary.GetSongs", "params":{"filter":{"albumid": %s}, "properties":["artistid", "file"]}}' %_albumid)
                 _json_query = unicode(_json_query, 'utf-8', errors='ignore')
                 log(_json_query)
                 _json_pl_response = simplejson.loads(_json_query)
@@ -371,23 +369,23 @@ def _getAlbumsFromPlaylist ( ):
                 if _result:
                     _albumpath = os.path.split(_result[0]['file'])[0]
                     _artistpath = os.path.split(_albumpath)[0]
-            _albumid = _file.get('albumid', _file.get('id'))
-            _albumpath = os.path.split(_file['file'])[0]
-            _artistpath = os.path.split(_albumpath)[0]
-            _songs += 1
+                    _artistid = _result[0]['artistid']
+                    if _artistid not in _artistsid:
+                        _artists += 1
+                        _artistsid.append(_artistid)
+            #_albumid = _file.get('albumid', _file.get('id'))
+            #_albumpath = os.path.split(_file['file'])[0]
+            #_artistpath = os.path.split(_albumpath)[0]
+            #_songs += 1
+            '''
             if _albumid not in _albumsid:
                 _file["id"] = _albumid
                 _file["albumPath"] = _albumpath
                 _file["artistPath"] = _artistpath
                 _albums.append(_file)
                 _albumsid.append(_albumid)
-
-            _artistid = _file['artistid']
-            if _artistid not in _artistsid:
-                _artists += 1
-                _artistsid.append(_artistid)
             '''
-        #_setMusicProperties ( _artists, len(_albums), _songs )
+        _setMusicProperties ( _artists, len(_files), _songs )
         '''
         # This doesn't work atm because Files.GetDirectory doesn't retrieve dateadded for albums
         if METHOD == 'Last':
