@@ -293,7 +293,6 @@ def _getEpisodes ( ):
     # Request database using JSON
     _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": { "properties": ["title", "playcount", "season", "episode", "showtitle", "plot", "file", "rating", "resume", "tvshowid", "art", "streamdetails", "dateadded"]}, "id": 1}')
     _json_query = unicode(_json_query, 'utf-8', errors='ignore')
-    log(_json_query)
     _json_pl_response = simplejson.loads(_json_query)
     # If request return some results
     _episodes = _json_pl_response.get( "result", {} ).get( "episodes" )
@@ -362,7 +361,6 @@ def _getAlbumsFromPlaylist ( ):
                 # Album playlist so get path from songs
                 _json_query = xbmc.executeJSONRPC('{"id":1, "jsonrpc":"2.0", "method":"AudioLibrary.GetSongs", "params":{"filter":{"albumid": %s}, "properties":["artistid", "file"]}}' %_albumid)
                 _json_query = unicode(_json_query, 'utf-8', errors='ignore')
-                log(_json_query)
                 _json_pl_response = simplejson.loads(_json_query)
                 _result = _json_pl_response.get( "result", {} ).get( "songs" )
                 _songs += len(_result)
