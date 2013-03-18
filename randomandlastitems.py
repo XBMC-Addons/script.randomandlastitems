@@ -82,7 +82,7 @@ def _getMovies ( ):
     # Request database using JSON
     if PLAYLIST == "":
         PLAYLIST = "videodb://1/2/"
-    _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "dateadded"]}, "id": 1}' %(PLAYLIST))
+    _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "originaltitle", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "dateadded"]}, "id": 1}' %(PLAYLIST))
     _json_query = unicode(_json_query, 'utf-8', errors='ignore')
     _json_pl_response = simplejson.loads(_json_query)
     # If request return some results
@@ -92,7 +92,7 @@ def _getMovies ( ):
             if xbmc.abortRequested:
                 break
             if _item['filetype'] == 'directory':
-                _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "dateadded"]}, "id": 1}' %(_item['file']))
+                _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "originaltitle", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "dateadded"]}, "id": 1}' %(_item['file']))
                 _json_query = unicode(_json_query, 'utf-8', errors='ignore')
                 _json_set_response = simplejson.loads(_json_query)
                 _movies = _json_set_response.get( "result", {} ).get( "files" ) or []
@@ -165,7 +165,8 @@ def _getMovies ( ):
                 runtime = _movie['runtime']
             # Set window properties
             _setProperty( "%s.%d.DBID"            % ( PROPERTY, _count ), str(_movie.get('id')))
-            _setProperty( "%s.%d.Title"           % ( PROPERTY, _count ), _movie['label'])
+            _setProperty( "%s.%d.Title"           % ( PROPERTY, _count ), _movie['title'])
+            _setProperty( "%s.%d.OriginalTitle"   % ( PROPERTY, _count ), _movie['originaltitle'])
             _setProperty( "%s.%d.Year"            % ( PROPERTY, _count ), str(_movie['year']))
             _setProperty( "%s.%d.Genre"           % ( PROPERTY, _count ), " / ".join(_movie['genre']))
             _setProperty( "%s.%d.Studio"          % ( PROPERTY, _count ), _movie['studio'][0])
