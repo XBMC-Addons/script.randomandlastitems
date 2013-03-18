@@ -1,3 +1,6 @@
+v2.0.6
+- Add OriginalTitle property
+
 v2.0.5
 - Fix statistics for Albums smart playlists
 
