@@ -35,6 +35,7 @@ Properties return to Home window (id 10000) :
 %s.Watched = Number of watched movies in library or playlist
 %s.%d.DBID
 %s.%d.Title
+%s.%d.OriginalTitle
 %s.%d.Year
 %s.%d.Genre
 %s.%d.Studio
