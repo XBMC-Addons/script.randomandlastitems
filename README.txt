@@ -102,6 +102,8 @@ Properties return to Home window (id 10000) :
 %s.%d.Resume"
 %s.%d.PercentPlayed"
 %s.%d.File"
+%s.%d.MPAA"
+%s.%d.Studio"
 %s.%d.Path"
 %s.%d.Play
 %s.%d.VideoCodec"
