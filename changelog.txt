@@ -1,8 +1,11 @@
+v2.0.8
+- Add MPAA and Studio properties for TV Shows
+
 v2.0.7
-- Add MPAA and Director properties
+- Add MPAA and Director properties for movies
 
 v2.0.6
-- Add OriginalTitle property
+- Add OriginalTitle property for movies
 
 v2.0.5
 - Fix statistics for Albums smart playlists
