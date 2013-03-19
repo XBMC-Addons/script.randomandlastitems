@@ -82,7 +82,7 @@ def _getMovies ( ):
     # Request database using JSON
     if PLAYLIST == "":
         PLAYLIST = "videodb://1/2/"
-    _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "originaltitle", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "dateadded"]}, "id": 1}' %(PLAYLIST))
+    _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "originaltitle", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "mpaa", "director", "dateadded"]}, "id": 1}' %(PLAYLIST))
     _json_query = unicode(_json_query, 'utf-8', errors='ignore')
     _json_pl_response = simplejson.loads(_json_query)
     # If request return some results
@@ -92,7 +92,7 @@ def _getMovies ( ):
             if xbmc.abortRequested:
                 break
             if _item['filetype'] == 'directory':
-                _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "originaltitle", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "dateadded"]}, "id": 1}' %(_item['file']))
+                _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "originaltitle", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "mpaa", "director", "dateadded"]}, "id": 1}' %(_item['file']))
                 _json_query = unicode(_json_query, 'utf-8', errors='ignore')
                 _json_set_response = simplejson.loads(_json_query)
                 _movies = _json_set_response.get( "result", {} ).get( "files" ) or []
@@ -177,6 +177,8 @@ def _getMovies ( ):
             _setProperty( "%s.%d.Runtime"         % ( PROPERTY, _count ), runtime)
             _setProperty( "%s.%d.Rating"          % ( PROPERTY, _count ), str(round(float(_movie['rating']),1)))
             _setProperty( "%s.%d.Trailer"         % ( PROPERTY, _count ), _movie['trailer'])
+            _setProperty( "%s.%d.MPAA"            % ( PROPERTY, _count ), _movie['mpaa'])
+            _setProperty( "%s.%d.Director"        % ( PROPERTY, _count ), " / ".join(_movie['director']))
             _setProperty( "%s.%d.Art(poster)"     % ( PROPERTY, _count ), art.get('poster',''))
             _setProperty( "%s.%d.Art(fanart)"     % ( PROPERTY, _count ), art.get('fanart',''))
             _setProperty( "%s.%d.Art(clearlogo)"  % ( PROPERTY, _count ), art.get('clearlogo',''))
