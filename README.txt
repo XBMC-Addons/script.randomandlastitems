@@ -46,6 +46,8 @@ Properties return to Home window (id 10000) :
 %s.%d.Runtime
 %s.%d.Rating
 %s.%d.Trailer
+%s.%d.MPAA
+%s.%d.Director
 %s.%d.Art(poster)
 %s.%d.Art(fanart)
 %s.%d.Art(clearlogo)
