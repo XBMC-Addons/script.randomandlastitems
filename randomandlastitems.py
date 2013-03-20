@@ -596,6 +596,7 @@ def _parse_argv ( ):
                 METHOD = param.replace('method=', '')
             elif 'playlist=' in param:
                 PLAYLIST = param.replace('playlist=', '')
+                PLAYLIST = PLAYLIST.replace('"', '')
             elif 'property=' in param:
                 PROPERTY = param.replace('property=', '')
             elif 'type=' in param:
