@@ -121,15 +121,16 @@ Properties return to Home window (id 10000) :
 %s.Albums = Number of albums in library or playlist
 %s.Songs = Nombre of songs in library or playlist
 %s.%d.Title
-%s.%d.Label  #depricated
 %s.%d.Artist
 %s.%d.Genre
 %s.%d.Year
+%s.%d.Theme
+%s.%d.Mood
+%s.%d.Style
+%s.%d.Type
 %s.%d.RecordLabel
 %s.%d.Description
 %s.%d.Rating
-%s.%d.Thumb  #depricated
-%s.%d.Fanart  #depricated
 %s.%d.Art(thumb)
 %s.%d.Art(fanart)
 %s.%d.Play
