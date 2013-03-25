@@ -1,3 +1,8 @@
+v2.0.9
+- Fix quoted or not quoted path for smart playlist
+- Add Theme, Mood, Style and Type properties for Music
+- Remove Thumb and Fanart properties for Music (depricated and replaced by Art(thumb) and Art(fanart) properties)
+
 v2.0.8
 - Add MPAA and Studio properties for TV Shows
 
