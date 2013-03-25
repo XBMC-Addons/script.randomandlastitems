@@ -345,11 +345,11 @@ def _getAlbumsFromPlaylist ( ):
         PLAYLIST = "musicdb://4/"
     #_json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["title", "description", "albumlabel", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount", "dateadded"]}, "id": 1}' %(PLAYLIST))
     if METHOD == 'Random':
-        _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["title", "description", "albumlabel", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount", "dateadded"], "sort": {"method": "random"}}, "id": 1}' %(PLAYLIST))
+        _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["dateadded"], "sort": {"method": "random"}}, "id": 1}' %(PLAYLIST))
     elif METHOD == 'Last':
-        _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["title", "description", "albumlabel", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount", "dateadded"], "sort": {"order": "descending", "method": "dateadded"}}, "id": 1}' %(PLAYLIST))
+        _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["dateadded"], "sort": {"order": "descending", "method": "dateadded"}}, "id": 1}' %(PLAYLIST))
     else:
-        _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["title", "description", "albumlabel", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount", "dateadded"]}, "id": 1}' %(PLAYLIST))
+        _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["dateadded"]}, "id": 1}' %(PLAYLIST))
     _json_query = unicode(_json_query, 'utf-8', errors='ignore')
     _json_pl_response = simplejson.loads(_json_query)
     # If request return some results
@@ -362,14 +362,12 @@ def _getAlbumsFromPlaylist ( ):
                 _albums.append(_file)
                 _albumid = _file['id']
                 # Album playlist so get path from songs
-                _json_query = xbmc.executeJSONRPC('{"id":1, "jsonrpc":"2.0", "method":"AudioLibrary.GetSongs", "params":{"filter":{"albumid": %s}, "properties":["artistid", "file"]}}' %_albumid)
+                _json_query = xbmc.executeJSONRPC('{"id":1, "jsonrpc":"2.0", "method":"AudioLibrary.GetSongs", "params":{"filter":{"albumid": %s}, "properties":["artistid"]}}' %_albumid)
                 _json_query = unicode(_json_query, 'utf-8', errors='ignore')
                 _json_pl_response = simplejson.loads(_json_query)
                 _result = _json_pl_response.get( "result", {} ).get( "songs" )
                 _songs += len(_result)
                 if _result:
-                    _albumpath = os.path.split(_result[0]['file'])[0]
-                    _artistpath = os.path.split(_albumpath)[0]
                     _artistid = _result[0]['artistid']
                     if _artistid not in _artistsid:
                         _artists += 1
@@ -399,6 +397,12 @@ def _getAlbumsFromPlaylist ( ):
             if xbmc.abortRequested or _count == LIMIT:
                 break
             _count += 1
+            _albumid = _album['id'];
+            _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbumDetails", "params":{"albumid": %s, "properties":["title", "description", "albumlabel", "theme", "mood", "style", "type", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount"]}, "id": 1}' %_albumid )
+            _json_query = unicode(_json_query, 'utf-8', errors='ignore')
+            _json_pl_response = simplejson.loads(_json_query)
+            # If request return some results
+            _album = _json_pl_response.get( "result", {} ).get( "albumdetails" )
             _setAlbumPROPERTIES ( _album, _count )
         if _count <= LIMIT:
             while _count < LIMIT:
@@ -532,21 +536,22 @@ def _setAlbumPROPERTIES ( _album, _count ):
     global PROPERTY
     if _album:
         # Set window Properties
-        rating = str(_album['rating'])
-        if rating == '48':
-            rating = ''
+        _rating = str(_album['rating'])
+        if _rating == '48':
+            _rating = ''
         play = 'XBMC.RunScript(' + __addonid__ + ',albumid=' + str(_album.get('id')) + ')'
         path = 'musicdb://3/' + str(_album.get('id')) + '/'
         _setProperty("%s.%d.Title"       % ( PROPERTY, _count ), _album['title'])
-        _setProperty("%s.%d.Label"       % ( PROPERTY, _count ), _album['title']) #needs to be removed
         _setProperty("%s.%d.Artist"      % ( PROPERTY, _count ), " / ".join(_album['artist']))
         _setProperty("%s.%d.Genre"       % ( PROPERTY, _count ), " / ".join(_album['genre']))
+        _setProperty("%s.%d.Theme"       % ( PROPERTY, _count ), " / ".join(_album['theme']))
+        _setProperty("%s.%d.Mood"        % ( PROPERTY, _count ), " / ".join(_album['mood']))
+        _setProperty("%s.%d.Style"       % ( PROPERTY, _count ), " / ".join(_album['style']))
+        _setProperty("%s.%d.Type"        % ( PROPERTY, _count ), _album['type'])
         _setProperty("%s.%d.Year"        % ( PROPERTY, _count ), str(_album['year']))
         _setProperty("%s.%d.RecordLabel" % ( PROPERTY, _count ), _album['albumlabel'])
         _setProperty("%s.%d.Description" % ( PROPERTY, _count ), _album['description'])
-        _setProperty("%s.%d.Rating"      % ( PROPERTY, _count ), rating)
-        _setProperty("%s.%d.Thumb"       % ( PROPERTY, _count ), _album['thumbnail']) #remove
-        _setProperty("%s.%d.Fanart"      % ( PROPERTY, _count ), _album['fanart']) #remove
+        _setProperty("%s.%d.Rating"      % ( PROPERTY, _count ), _rating)
         _setProperty("%s.%d.Art(thumb)"  % ( PROPERTY, _count ), _album['thumbnail'])
         _setProperty("%s.%d.Art(fanart)" % ( PROPERTY, _count ), _album['fanart'])
         _setProperty("%s.%d.Play"        % ( PROPERTY, _count ), play)
