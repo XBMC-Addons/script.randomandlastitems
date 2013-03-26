@@ -366,8 +366,8 @@ def _getAlbumsFromPlaylist ( ):
                 _json_query = unicode(_json_query, 'utf-8', errors='ignore')
                 _json_pl_response = simplejson.loads(_json_query)
                 _result = _json_pl_response.get( "result", {} ).get( "songs" )
-                _songs += len(_result)
                 if _result:
+                    _songs += len(_result)
                     _artistid = _result[0]['artistid']
                     if _artistid not in _artistsid:
                         _artists += 1
@@ -635,8 +635,10 @@ def media_streamdetails(filename, streamdetails):
             info['videoresolution'] = "540"
         elif (video[0]['width'] <= 1280 and video[0]['height'] <= 720):
             info['videoresolution'] = "720"
-        else:
+        elif (video[0]['width'] >= 1281 and video[0]['height'] >= 721):
             info['videoresolution'] = "1080"
+        else:
+            info['videoresolution'] = ""
     elif (('dvd') in filename and not ('hddvd' or 'hd-dvd') in filename) or (filename.endswith('.vob' or '.ifo')):
         info['videoresolution'] = '576'
     elif (('bluray' or 'blu-ray' or 'brrip' or 'bdrip' or 'hddvd' or 'hd-dvd') in filename):
