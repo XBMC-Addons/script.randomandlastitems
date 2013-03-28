@@ -1,3 +1,8 @@
+v2.1.1
+- Fix runtime property to use duration from streamdetails
+- Fix play property for albums
+- Add art(thumb) for movies (same value as art(poster) but easiest for skinner to deal with albums and movies smart playlists)
+
 v2.1.0
 - Fix issue when album have no songs
 - Fix resolution when movie or TV show is not anaylized yet (not height and weight in DB)
