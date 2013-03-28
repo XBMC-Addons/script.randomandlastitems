@@ -649,6 +649,10 @@ def media_streamdetails(filename, streamdetails):
         info['videoresolution'] = '1080'
     else:
         info['videoresolution'] = '1080'
+    if video and 'duration' in video[0]:
+        info['duration'] = video[0]['duration']
+    else:
+        info['duration'] = 0
     if video:
         info['videocodec'] = video[0]['codec']
         if (video[0]['aspect'] < 1.4859):
