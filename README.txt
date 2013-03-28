@@ -48,6 +48,7 @@ Properties return to Home window (id 10000) :
 %s.%d.Trailer
 %s.%d.MPAA
 %s.%d.Director
+%s.%d.Art(thumb) (same value as Art(poster) but make skinner life easier ;)
 %s.%d.Art(poster)
 %s.%d.Art(fanart)
 %s.%d.Art(clearlogo)
