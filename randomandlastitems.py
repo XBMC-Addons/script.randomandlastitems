@@ -158,11 +158,14 @@ def _getMovies ( ):
             art = _movie['art']
             streaminfo = media_streamdetails(_movie['file'].encode('utf-8').lower(),
                                        _movie['streamdetails'])
-            # Temporary check if runtime is an int or str
-            if isinstance(_movie['runtime'],int):
-                runtime = str(_movie['runtime']/60)
+            # Get runtime from streamdetails or from NFO
+            if streaminfo['duration'] != 0:
+                runtime = str(int((streaminfo['duration'] / 60) + 0.5))
             else:
-                runtime = _movie['runtime']
+                if isinstance(_movie['runtime'],int):
+                    runtime = str(int((_movie['runtime'] / 60) + 0.5))
+                else:
+                    runtime = _movie['runtime']
             # Set window properties
             _setProperty( "%s.%d.DBID"            % ( PROPERTY, _count ), str(_movie.get('id')))
             _setProperty( "%s.%d.Title"           % ( PROPERTY, _count ), _movie['title'])
@@ -179,6 +182,7 @@ def _getMovies ( ):
             _setProperty( "%s.%d.Trailer"         % ( PROPERTY, _count ), _movie['trailer'])
             _setProperty( "%s.%d.MPAA"            % ( PROPERTY, _count ), _movie['mpaa'])
             _setProperty( "%s.%d.Director"        % ( PROPERTY, _count ), " / ".join(_movie['director']))
+            _setProperty( "%s.%d.Art(thumb)"      % ( PROPERTY, _count ), art.get('poster',''))
             _setProperty( "%s.%d.Art(poster)"     % ( PROPERTY, _count ), art.get('poster',''))
             _setProperty( "%s.%d.Art(fanart)"     % ( PROPERTY, _count ), art.get('fanart',''))
             _setProperty( "%s.%d.Art(clearlogo)"  % ( PROPERTY, _count ), art.get('clearlogo',''))
@@ -539,8 +543,8 @@ def _setAlbumPROPERTIES ( _album, _count ):
         _rating = str(_album['rating'])
         if _rating == '48':
             _rating = ''
-        play = 'XBMC.RunScript(' + __addonid__ + ',albumid=' + str(_album.get('id')) + ')'
-        path = 'musicdb://3/' + str(_album.get('id')) + '/'
+        play = 'XBMC.RunScript(' + __addonid__ + ',albumid=' + str(_album.get('albumid')) + ')'
+        path = 'musicdb://3/' + str(_album.get('albumid')) + '/'
         _setProperty("%s.%d.Title"       % ( PROPERTY, _count ), _album['title'])
         _setProperty("%s.%d.Artist"      % ( PROPERTY, _count ), " / ".join(_album['artist']))
         _setProperty("%s.%d.Genre"       % ( PROPERTY, _count ), " / ".join(_album['genre']))
