@@ -49,7 +49,7 @@ Properties return to Home window (id 10000) :
 %s.%d.MPAA
 %s.%d.Director
 %s.%d.Art(thumb) (same value as Art(poster) but make skinner life easier ;)
-%s.%d.Art(poster)
+%s.%d.Art(poster) (deprecated, will be remove is soon)
 %s.%d.Art(fanart)
 %s.%d.Art(clearlogo)
 %s.%d.Art(clearart)
