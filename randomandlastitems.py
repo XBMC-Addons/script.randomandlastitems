@@ -248,8 +248,9 @@ def _getEpisodesFromPlaylist ( ):
                         _episode["id"]=_episode['episodeid']
                         _episode["tvshowfanart"]=art.get('tvshow.fanart')
                         _episode["tvshowthumb"]=art.get('thumb')
-                        _episode["mpaa"]=''
-                        _episode["studio"]=''
+                        # Set MPAA and studio for all episodes
+                        _episode["mpaa"]=_file['mpaa']
+                        _episode["studio"]=_file['studio']
                         _total, _watched, _unwatched, _result = _watchedOrResume ( _total, _watched, _unwatched, _result, _episode )
                 else:
                     log("[RandomAndLastItems] ## PLAYLIST %s COULD NOT BE LOADED ##" %(PLAYLIST))
