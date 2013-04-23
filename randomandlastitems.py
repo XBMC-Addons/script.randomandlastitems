@@ -46,6 +46,10 @@ def _getPlaylistType ():
        TYPE = 'Episode'
     if _type == 'songs' or _type == 'albums':
        TYPE = 'Music'
+    # get playlist name
+    _name = _doc.getElementsByTagName('name')[0].firstChild.nodeValue
+    if _name != "":
+        _setProperty( "%s.Name" % PROPERTY, str( _name ) )
 
 def _timeTook( t ):
     t = ( time.time() - t )
