@@ -504,6 +504,7 @@ def _setEpisodeProperties ( _episode, _count ):
         art = _episode['art']
         path = media_path(_episode['file'])
         play = 'XBMC.RunScript(' + __addonid__ + ',episodeid=' + str(_episode.get('id')) + ')'
+        runtime = str(int((_episode['runtime'] / 60) + 0.5))
         streaminfo = media_streamdetails(_episode['file'].encode('utf-8').lower(),
                                          _episode['streamdetails'])
         _setProperty("%s.%d.DBID"                  % ( PROPERTY, _count ), str(_episode.get('id')))
@@ -528,7 +529,7 @@ def _setEpisodeProperties ( _episode, _count ):
         _setProperty("%s.%d.Art(clearart)"         % ( PROPERTY, _count ), art.get('tvshow.clearart',''))
         _setProperty("%s.%d.Art(landscape)"        % ( PROPERTY, _count ), art.get('tvshow.landscape',''))
         _setProperty("%s.%d.Resume"                % ( PROPERTY, _count ), resume)
-        _setProperty("%s.%d.Runtime"               % ( PROPERTY, _count ), str(_episode.get('runtime')))
+        _setProperty("%s.%d.Runtime"               % ( PROPERTY, _count ), runtime)
         _setProperty("%s.%d.PercentPlayed"         % ( PROPERTY, _count ), played)
         _setProperty("%s.%d.File"                  % ( PROPERTY, _count ), _episode['file'])
         _setProperty("%s.%d.MPAA"                  % ( PROPERTY, _count ), _episode['mpaa'])
