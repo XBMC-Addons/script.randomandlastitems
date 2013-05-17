@@ -3,7 +3,7 @@ Parameters (separated by comma , ):
 type = Movie/Episode/Music       | Script will request Movie database or Episode database
                                  | (/!\ Caution : upper and lower case are important)
 limit = #                        | # to limit returned results (default=10)
-method = Last/Random             | Last to get last added items and Random to get random items
+method = Last/Random/Playlist    | Last to get last added items, Random to get random items and Playlist to use the order of the playlist
 playlist = PathAndNameOfPlaylist | Name of the smartplaylist like special://masterprofile/playlists/video/children.xsp
                                  | or empty to request global database
                                  | If you set this parameter, you don't need to set type= because type will be read from playlist file
