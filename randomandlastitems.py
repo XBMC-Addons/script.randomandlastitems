@@ -17,10 +17,12 @@ from xml.dom.minidom import parse
 # Define global variables
 LIMIT = 20
 METHOD = "Random"
+REVERSE = False
 MENU = ""
 PLAYLIST = ""
 PROPERTY = ""
 RESUME = 'False'
+SORTBY = ""
 START_TIME = time.time()
 TYPE = ''
 UNWATCHED = 'False'
@@ -36,7 +38,10 @@ def log(txt):
     xbmc.log(msg=message, level=xbmc.LOGDEBUG)
 
 def _getPlaylistType ():
+    global METHOD
     global PLAYLIST
+    global REVERSE
+    global SORTBY
     global TYPE
     _doc = parse(xbmc.translatePath(PLAYLIST))
     _type = _doc.getElementsByTagName('smartplaylist')[0].attributes.item(0).value
@@ -50,6 +55,14 @@ def _getPlaylistType ():
     _name = _doc.getElementsByTagName('name')[0].firstChild.nodeValue
     if _name != "":
         _setProperty( "%s.Name" % PROPERTY, str( _name ) )
+    # get playlist order
+        if METHOD == 'Playlist':
+            if _doc.getElementsByTagName('order'):
+                SORTBY = _doc.getElementsByTagName('order')[0].firstChild.nodeValue
+                if _doc.getElementsByTagName('order')[0].attributes.item(0).value == "descending":
+                    REVERSE = True
+            else:
+                METHOD = ""
 
 def _timeTook( t ):
     t = ( time.time() - t )
@@ -78,6 +91,8 @@ def _getMovies ( ):
     global PLAYLIST
     global PROPERTY
     global RESUME
+    global REVERSE
+    global SORTBY
     global UNWATCHED
     _result = []
     _total = 0
@@ -135,6 +150,8 @@ def _getMovies ( ):
         _count = 0
         if METHOD == 'Last':
             _result = sorted(_result, key=itemgetter('dateadded'), reverse=True)
+        elif METHOD == 'Playlist':
+            _result = sorted(_result, key=itemgetter(SORTBY), reverse=REVERSE)
         else:
             random.shuffle(_result, random.random)
         for _movie in _result:
@@ -218,6 +235,8 @@ def _getEpisodesFromPlaylist ( ):
     global METHOD
     global PLAYLIST
     global RESUME
+    global REVERSE
+    global SORTBY
     global UNWATCHED
     global PROPERTY
     _result = []
@@ -271,6 +290,8 @@ def _getEpisodesFromPlaylist ( ):
         _count = 0
         if METHOD == 'Last':
             _result = sorted(_result, key=itemgetter('dateadded'), reverse=True)
+        elif METHOD == 'Playlist':
+            _result = sorted(_result, key=itemgetter(SORTBY), reverse=REVERSE)
         else:
             random.shuffle(_result, random.random)
         for _episode in _result:
@@ -297,6 +318,8 @@ def _getEpisodes ( ):
     global LIMIT
     global METHOD
     global RESUME
+    global REVERSE
+    global SORTBY
     global UNWATCHED
     _result = []
     _total = 0
@@ -326,6 +349,8 @@ def _getEpisodes ( ):
         _count = 0
         if METHOD == 'Last':
             _result = sorted(_result, key=itemgetter('dateadded'), reverse=True)
+        elif METHOD == 'Playlist':
+            _result = sorted(_result, key=itemgetter(SORTBY), reverse=REVERSE)
         else:
             random.shuffle(_result, random.random)
         for _episode in _result:
@@ -345,6 +370,8 @@ def _getAlbumsFromPlaylist ( ):
     global LIMIT
     global METHOD
     global PLAYLIST
+    global REVERSE
+    global SORTBY
     _result = []
     _artists = 0
     _artistsid = []
@@ -359,6 +386,11 @@ def _getAlbumsFromPlaylist ( ):
         _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["dateadded"], "sort": {"method": "random"}}, "id": 1}' %(PLAYLIST))
     elif METHOD == 'Last':
         _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["dateadded"], "sort": {"order": "descending", "method": "dateadded"}}, "id": 1}' %(PLAYLIST))
+    elif METHOD == 'Playlist':
+        order = "ascending"
+        if REVERSE:
+            order = "descending"
+        _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["dateadded"], "sort": {"order": "%s", "method": "%s"}}, "id": 1}' %(PLAYLIST, order, SORTBY))
     else:
         _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["dateadded"]}, "id": 1}' %(PLAYLIST))
     _json_query = unicode(_json_query, 'utf-8', errors='ignore')
