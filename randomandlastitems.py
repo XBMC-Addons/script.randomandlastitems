@@ -52,17 +52,18 @@ def _getPlaylistType ():
     if _type == 'songs' or _type == 'albums':
        TYPE = 'Music'
     # get playlist name
-    _name = _doc.getElementsByTagName('name')[0].firstChild.nodeValue
-    if _name != "":
+    _firstChild = _doc.getElementsByTagName('name')[0].firstChild;
+    if _firstChild != None:
+        _name = _firstChild.nodeValue
         _setProperty( "%s.Name" % PROPERTY, str( _name ) )
     # get playlist order
-        if METHOD == 'Playlist':
-            if _doc.getElementsByTagName('order'):
-                SORTBY = _doc.getElementsByTagName('order')[0].firstChild.nodeValue
-                if _doc.getElementsByTagName('order')[0].attributes.item(0).value == "descending":
-                    REVERSE = True
-            else:
-                METHOD = ""
+    if METHOD == 'Playlist':
+        if _doc.getElementsByTagName('order'):
+            SORTBY = _doc.getElementsByTagName('order')[0].firstChild.nodeValue
+            if _doc.getElementsByTagName('order')[0].attributes.item(0).value == "descending":
+                REVERSE = True
+        else:
+            METHOD = ""
 
 def _timeTook( t ):
     t = ( time.time() - t )
