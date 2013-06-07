@@ -1,3 +1,6 @@
+v2.1.6
+- Add %s.Loaded property to indicate the script is done loading the playlist
+
 v2.1.5
 - Add %s.%d.Watched property for episodes or TV shows
 
