@@ -52,10 +52,10 @@ def _getPlaylistType ():
     if _type == 'songs' or _type == 'albums':
        TYPE = 'Music'
     # get playlist name
-    _firstChild = _doc.getElementsByTagName('name')[0].firstChild;
-    if _firstChild != None:
-        _name = _firstChild.nodeValue
-        _setProperty( "%s.Name" % PROPERTY, str( _name ) )
+    _name = ""
+    if _doc.getElementsByTagName('name'):
+        _name = _doc.getElementsByTagName('name')[0].firstChild.nodeValue.encode('utf-8')
+    _setProperty( "%s.Name" % PROPERTY, str( _name ) )
     # get playlist order
     if METHOD == 'Playlist':
         if _doc.getElementsByTagName('order'):
