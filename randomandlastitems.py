@@ -47,6 +47,8 @@ def _getPlaylistType ():
     _type = _doc.getElementsByTagName('smartplaylist')[0].attributes.item(0).value
     if _type == 'movies':
        TYPE = 'Movie'
+    if _type == 'musicvideos':
+       TYPE = 'MusicVideo'
     if _type == 'episodes' or _type == 'tvshows':
        TYPE = 'Episode'
     if _type == 'songs' or _type == 'albums':
@@ -196,8 +198,8 @@ def _getMovies ( ):
             _setProperty( "%s.%d.OriginalTitle"   % ( PROPERTY, _count ), _movie['originaltitle'])
             _setProperty( "%s.%d.Year"            % ( PROPERTY, _count ), str(_movie['year']))
             _setProperty( "%s.%d.Genre"           % ( PROPERTY, _count ), " / ".join(_movie['genre']))
-            _setProperty( "%s.%d.Studio"          % ( PROPERTY, _count ), _movie['studio'][0])
-            _setProperty( "%s.%d.Country"         % ( PROPERTY, _count ), _movie['country'][0])
+            _setProperty( "%s.%d.Studio"          % ( PROPERTY, _count ), " / ".join(_movie['studio']))
+            _setProperty( "%s.%d.Country"         % ( PROPERTY, _count ), " / ".join(_movie['country']))
             _setProperty( "%s.%d.Plot"            % ( PROPERTY, _count ), _movie['plot'])
             _setProperty( "%s.%d.PlotOutline"     % ( PROPERTY, _count ), _movie['plotoutline'])
             _setProperty( "%s.%d.Tagline"         % ( PROPERTY, _count ), _movie['tagline'])
@@ -218,6 +220,123 @@ def _getMovies ( ):
             _setProperty( "%s.%d.PercentPlayed"   % ( PROPERTY, _count ), played)
             _setProperty( "%s.%d.Watched"         % ( PROPERTY, _count ), watched)
             _setProperty( "%s.%d.File"            % ( PROPERTY, _count ), _movie['file'])
+            _setProperty( "%s.%d.Path"            % ( PROPERTY, _count ), path)
+            _setProperty( "%s.%d.Play"            % ( PROPERTY, _count ), play)
+            _setProperty( "%s.%d.VideoCodec"      % ( PROPERTY, _count ), streaminfo['videocodec'])
+            _setProperty( "%s.%d.VideoResolution" % ( PROPERTY, _count ), streaminfo['videoresolution'])
+            _setProperty( "%s.%d.VideoAspect"     % ( PROPERTY, _count ), streaminfo['videoaspect'])
+            _setProperty( "%s.%d.AudioCodec"      % ( PROPERTY, _count ), streaminfo['audiocodec'])
+            _setProperty( "%s.%d.AudioChannels"   % ( PROPERTY, _count ), str(streaminfo['audiochannels']))
+        if _count != LIMIT:
+            while _count < LIMIT:
+                _count += 1
+                _setProperty( "%s.%d.Title"       % ( PROPERTY, _count ), "" )
+    else:
+        log("[RandomAndLastItems] ## PLAYLIST %s COULD NOT BE LOADED ##" %(PLAYLIST))
+        log("[RandomAndLastItems] JSON RESULT %s" %_json_pl_response)
+
+def _getMusicVideosFromPlaylist ( ):
+    global LIMIT
+    global METHOD
+    global MENU
+    global PLAYLIST
+    global PROPERTY
+    global RESUME
+    global REVERSE
+    global SORTBY
+    global UNWATCHED
+    _result = []
+    _total = 0
+    _unwatched = 0
+    _watched = 0
+    # Request database using JSON
+    _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "playcount", "year", "genre", "studio", "album", "artist", "track", "plot", "tag", "runtime", "file", "lastplayed", "resume", "art", "streamdetails", "director", "dateadded"]}, "id": 1}' %(PLAYLIST))
+    _json_query = unicode(_json_query, 'utf-8', errors='ignore')
+    _json_pl_response = simplejson.loads(_json_query)
+    # If request return some results
+    _files = _json_pl_response.get( "result", {} ).get( "files" )
+    if _files:
+        for _item in _files:
+            if xbmc.abortRequested:
+                break
+            _playcount = _item['playcount']
+            if RESUME == 'True':
+                _resume = _item['resume']['position']
+            else:
+                _resume = 0
+            _total += 1
+            if _playcount == 0:
+                _unwatched += 1
+            else:
+                _watched += 1
+            if (UNWATCHED == 'False' and RESUME == 'False') or (UNWATCHED == 'True' and _playcount == 0) or (RESUME == 'True' and _resume != 0):
+                _result.append(_item)
+        _setVideoProperties ( _total, _watched, _unwatched )
+        _count = 0
+        if METHOD == 'Last':
+            _result = sorted(_result, key=itemgetter('dateadded'), reverse=True)
+        elif METHOD == 'Playlist':
+            _result = sorted(_result, key=itemgetter(SORTBY), reverse=REVERSE)
+        else:
+            random.shuffle(_result, random.random)
+        for _musicvid in _result:
+            if xbmc.abortRequested or _count == LIMIT:
+                break
+            _count += 1
+            _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideoDetails", "params": {"properties": ["streamdetails"], "musicvideoid":%s }, "id": 1}' %(_musicvid['id']))
+            _json_query = unicode(_json_query, 'utf-8', errors='ignore')
+            _json_query = simplejson.loads(_json_query)
+            if _json_query['result'].has_key('musicvideodetails'):
+                item = _json_query['result']['musicvideodetails']
+                _musicvid['streamdetails'] = item['streamdetails']
+            if _musicvid['resume']['position'] > 0:
+                resume = "true"
+                played = '%s%%'%int((float(_musicvid['resume']['position']) / float(_musicvid['resume']['total'])) * 100)
+            else:
+                resume = "false"
+                played = '0%'
+            if _musicvid['playcount'] >= 1:
+                watched = "true"
+            else:
+                watched = "false"
+            path = media_path(_musicvid['file'])
+            play = 'XBMC.RunScript(' + __addonid__ + ',musicvideoid=' + str(_musicvid.get('id')) + ')'
+            art = _musicvid['art']
+            streaminfo = media_streamdetails(_musicvid['file'].encode('utf-8').lower(),
+                                             _musicvid['streamdetails'])
+            # Get runtime from streamdetails or from NFO
+            if streaminfo['duration'] != 0:
+                runtime = str(int((streaminfo['duration'] / 60) + 0.5))
+            else:
+                if isinstance(_musicvid['runtime'],int):
+                    runtime = str(int((_musicvid['runtime'] / 60) + 0.5))
+                else:
+                    runtime = _musicvid['runtime']
+            # Set window properties
+            _setProperty( "%s.%d.DBID"            % ( PROPERTY, _count ), str(_musicvid.get('id')))
+            _setProperty( "%s.%d.Title"           % ( PROPERTY, _count ), _musicvid['title'])
+            _setProperty( "%s.%d.Year"            % ( PROPERTY, _count ), str(_musicvid['year']))
+            _setProperty( "%s.%d.Genre"           % ( PROPERTY, _count ), " / ".join(_musicvid['genre']))
+            _setProperty( "%s.%d.Studio"          % ( PROPERTY, _count ), " / ".join(_musicvid['studio']))
+            _setProperty( "%s.%d.Artist"          % ( PROPERTY, _count ), " / ".join(_musicvid['artist']))
+            _setProperty( "%s.%d.Album"           % ( PROPERTY, _count ), _musicvid['album'])
+            _setProperty( "%s.%d.Track"           % ( PROPERTY, _count ), str(_musicvid['track']))
+            _setProperty( "%s.%d.Plot"            % ( PROPERTY, _count ), _musicvid['plot'])
+            _setProperty( "%s.%d.Tag"             % ( PROPERTY, _count ), _musicvid['tag'])
+            _setProperty( "%s.%d.Runtime"         % ( PROPERTY, _count ), runtime)
+            _setProperty( "%s.%d.Director"        % ( PROPERTY, _count ), " / ".join(_musicvid['director']))
+            _setProperty( "%s.%d.Art(thumb)"      % ( PROPERTY, _count ), art.get('poster',''))
+            _setProperty( "%s.%d.Art(poster)"     % ( PROPERTY, _count ), art.get('poster',''))
+            _setProperty( "%s.%d.Art(fanart)"     % ( PROPERTY, _count ), art.get('fanart',''))
+            _setProperty( "%s.%d.Art(clearlogo)"  % ( PROPERTY, _count ), art.get('clearlogo',''))
+            _setProperty( "%s.%d.Art(clearart)"   % ( PROPERTY, _count ), art.get('clearart',''))
+            _setProperty( "%s.%d.Art(landscape)"  % ( PROPERTY, _count ), art.get('landscape',''))
+            _setProperty( "%s.%d.Art(banner)"     % ( PROPERTY, _count ), art.get('banner',''))
+            _setProperty( "%s.%d.Art(discart)"    % ( PROPERTY, _count ), art.get('discart',''))                
+            _setProperty( "%s.%d.Resume"          % ( PROPERTY, _count ), resume)
+            _setProperty( "%s.%d.PercentPlayed"   % ( PROPERTY, _count ), played)
+            _setProperty( "%s.%d.Watched"         % ( PROPERTY, _count ), watched)
+            _setProperty( "%s.%d.File"            % ( PROPERTY, _count ), _musicvid['file'])
             _setProperty( "%s.%d.Path"            % ( PROPERTY, _count ), path)
             _setProperty( "%s.%d.Play"            % ( PROPERTY, _count ), play)
             _setProperty( "%s.%d.VideoCodec"      % ( PROPERTY, _count ), streaminfo['videocodec'])
@@ -639,8 +758,8 @@ def _parse_argv ( ):
                     UNWATCHED = 'False'
             elif 'resume=' in param:
                 RESUME = param.replace('resume=', '')
-        # If playlist= parameter is set and not type= get type= from playlist
-        if TYPE == '' and PLAYLIST != '':
+        # If playlist= parameter is set then get type= from playlist
+        if PLAYLIST != '':
             _getPlaylistType ();
         if PROPERTY == "":
             PROPERTY = "Playlist%s%s%s" % ( METHOD, TYPE, MENU )
@@ -733,5 +852,7 @@ elif TYPE == 'Episode':
         _getEpisodesFromPlaylist()
 elif TYPE == 'Music':
     _getAlbumsFromPlaylist()
+elif TYPE == 'MusicVideo':
+    _getMusicVideosFromPlaylist()
 WINDOW.setProperty( "%s.Loaded" % PROPERTY, "true" )
 log( "Loading Playlist%s%s%s started at %s and take %s" %( METHOD, TYPE, MENU, time.strftime( "%Y-%m-%d %H:%M:%S", time.localtime( START_TIME ) ), _timeTook( START_TIME ) ) )
