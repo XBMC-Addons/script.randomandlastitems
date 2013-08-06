@@ -322,7 +322,7 @@ def _getMusicVideosFromPlaylist ( ):
             _setProperty( "%s.%d.Album"           % ( PROPERTY, _count ), _musicvid['album'])
             _setProperty( "%s.%d.Track"           % ( PROPERTY, _count ), str(_musicvid['track']))
             _setProperty( "%s.%d.Plot"            % ( PROPERTY, _count ), _musicvid['plot'])
-            _setProperty( "%s.%d.Tag"             % ( PROPERTY, _count ), _musicvid['tag'])
+            _setProperty( "%s.%d.Tag"             % ( PROPERTY, _count ), " / ".join(_musicvid['tag']))
             _setProperty( "%s.%d.Runtime"         % ( PROPERTY, _count ), runtime)
             _setProperty( "%s.%d.Director"        % ( PROPERTY, _count ), " / ".join(_musicvid['director']))
             _setProperty( "%s.%d.Art(thumb)"      % ( PROPERTY, _count ), art.get('poster',''))
