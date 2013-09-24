@@ -152,6 +152,7 @@ Script will look at smart playlist type to make the difference between Movies an
 %s.%d.Art(landscape)
 %s.%d.Resume
 %s.%d.Watched
+%s.%d.Premiered
 %s.%d.Runtime
 %s.%d.PercentPlayed
 %s.%d.File
