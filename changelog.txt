@@ -1,3 +1,6 @@
+v2.2.0
+- Fix for Gotham special:// paths
+
 v2.1.9
 - Add %s.d.Premiered for episodes
 

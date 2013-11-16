@@ -101,7 +101,7 @@ def _getMovies ( ):
     _watched = 0
     # Request database using JSON
     if PLAYLIST == "":
-        PLAYLIST = "videodb://1/2/"
+        PLAYLIST = "videodb://movies/titles/"
     _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["title", "originaltitle", "playcount", "year", "genre", "studio", "country", "tagline", "plot", "runtime", "file", "plotoutline", "lastplayed", "trailer", "rating", "resume", "art", "streamdetails", "mpaa", "director", "dateadded"]}, "id": 1}' %(PLAYLIST))
     _json_query = unicode(_json_query, 'utf-8', errors='ignore')
     _json_pl_response = json.loads(_json_query)
@@ -498,7 +498,7 @@ def _getAlbumsFromPlaylist ( ):
     _songs = 0
     # Request database using JSON
     if PLAYLIST == "":
-        PLAYLIST = "musicdb://4/"
+        PLAYLIST = "musicdb://songs/"
     #_json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["title", "description", "albumlabel", "artist", "genre", "year", "thumbnail", "fanart", "rating", "playcount", "dateadded"]}, "id": 1}' %(PLAYLIST))
     if METHOD == 'Random':
         _json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["dateadded"], "sort": {"method": "random"}}, "id": 1}' %(PLAYLIST))
@@ -683,7 +683,7 @@ def _setAlbumPROPERTIES ( _album, _count ):
         if _rating == '48':
             _rating = ''
         play = 'XBMC.RunScript(' + __addonid__ + ',albumid=' + str(_album.get('albumid')) + ')'
-        path = 'musicdb://3/' + str(_album.get('albumid')) + '/'
+        path = 'musicdb://albums/' + str(_album.get('albumid')) + '/'
         _setProperty("%s.%d.Title"       % ( PROPERTY, _count ), _album['title'])
         _setProperty("%s.%d.Artist"      % ( PROPERTY, _count ), " / ".join(_album['artist']))
         _setProperty("%s.%d.Genre"       % ( PROPERTY, _count ), " / ".join(_album['genre']))
