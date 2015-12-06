@@ -18,6 +18,7 @@ Script qui retourne, soit de manière aléatoire, soit les derniers ajouts, les 
 Il peut optionnellement gerer les playlistes pour filtrer les resultats.
         </description>
         <platform>all</platform>
+        <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
         <website></website>
         <source>https://github.com/XBMC-Addons/script.randomandlastitems</source>
         <forum>http://forum.xbmc.org/showthread.php?tid=122448</forum>
